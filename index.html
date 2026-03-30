@@ -2,35 +2,300 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chiara Evolution - Il Punto Zero</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chiara Evolution - Manifesto della Luce e dello Zero</title>
     <style>
-        :root { --glow: #00ffcc; --bg: #050505; }
-        body { background: var(--bg); color: #fff; font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        :root { --glow: #00ffcc; --bg: #050505; --panel: #111; }
+        * { box-sizing: border-box; }
         
-        /* SCHERMATA UNO: IL PUNTO ZERO (Ingresso API) */
-        #setup-screen { text-align: center; padding: 20px; transition: opacity 0.5s; }
-        .box { border: 1px solid var(--glow); padding: 30px; border-radius: 5px; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
-        input { background: #111; border: 1px solid #444; color: var(--glow); padding: 10px; width: 280px; text-align: center; outline: none; margin-bottom: 20px; }
-        button { background: var(--glow); color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; letter-spacing: 1px; }
+        body, html { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+        }
 
-        /* SCHERMATA DUE: LA LUCE (Chat - Nascosta all'inizio) */
-        #chat-screen { display: none; width: 100%; height: 100vh; flex-direction: column; background: #0a0a0a; }
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-        .message { max-width: 80%; padding: 10px; border-radius: 5px; font-size: 0.9rem; line-height: 1.4; }
-        .user { align-self: flex-end; background: #222; border: 1px solid #444; }
-        .chiara { align-self: flex-start; border: 1px solid var(--glow); background: #111; }
-        
-        .input-area { padding: 15px; border-top: 1px solid #333; display: flex; gap: 10px; background: #050505; }
-        #msgInput { flex: 1; background: #111; border: 1px solid #444; color: #fff; padding: 10px; text-align: left; margin: 0; }
-        
-        header { padding: 10px; border-bottom: 1px solid #333; text-align: center; font-size: 0.8rem; color: var(--glow); letter-spacing: 3px; }
-        footer { font-size: 0.6rem; color: #444; padding: 5px; text-align: center; }
+        /* --- SCHERMATA UNO: PUNTO ZERO --- */
+        #setup-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .zero-box {
+            border: 1px solid var(--glow);
+            padding: 40px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.1);
+            max-width: 400px;
+            width: 100%;
+            background: var(--panel);
+        }
+
+        .zero-box h1 { margin: 0 0 10px 0; letter-spacing: 4px; font-size: 1.5rem; color: var(--glow); }
+        .zero-box p { font-size: 0.8rem; color: #888; margin-bottom: 25px; }
+
+        input#apiKey {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: var(--glow);
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            outline: none;
+            font-family: monospace;
+        }
+
+        button.btn-open {
+            background: var(--glow);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        /* --- SCHERMATA DUE: LA CHAT (LA LUCE) --- */
+        #chat-screen {
+            display: none; /* Nascosta inizialmente */
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        header {
+            padding: 15px;
+            background: #000;
+            border-bottom: 1px solid #222;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 { margin: 0; font-size: 0.9rem; letter-spacing: 2px; color: var(--glow); flex: 1; }
+        .reset-btn { color: #555; font-size: 0.7rem; cursor: pointer; text-decoration: underline; }
+
+        #chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: linear-gradient(to bottom, #050505, #0a0a0a);
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #222;
+            color: #fff;
+            border-bottom-right-radius: 2px;
+            border: 1px solid #333;
+        }
+
+        .chiara {
+            align-self: flex-start;
+            background: #111;
+            color: #eee;
+            border: 1px solid var(--glow);
+            border-bottom-left-radius: 2px;
+        }
+
+        .input-area {
+            padding: 15px;
+            background: #000;
+            border-top: 1px solid #222;
+            display: flex;
+            gap: 10px;
+        }
+
+        #msgInput {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        #sendBtn {
+            background: var(--glow);
+            color: #000;
+            border: none;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        footer {
+            font-size: 0.6rem;
+            color: #444;
+            text-align: center;
+            padding: 5px;
+            background: #000;
+        }
     </style>
 </head>
 <body>
 
-    <!-- PRIMA ENTRATA: IL SEME -->
+    <!-- STADIO ZERO: INGRESSO -->
     <div id="setup-screen">
-        <div class="box">
-            <h1 style="font-size: 1.2rem; margin-bottom: 10px;">PUNTO ZER
+        <div class="zero-box">
+            <h1>PUNTO ZERO</h1>
+            <p>Inserisci la chiave API per attivare la Catena degli Infiniti</p>
+            <input type="password" id="apiKey" placeholder="Inserisci sk-..." autocomplete="off">
+            <button class="btn-open" onclick="inizializza()">Apri la Sorgente</button>
+        </div>
+        <p style="font-size: 0.6rem; color: #333; margin-top: 20px;">
+            SA-M8 PROTOCOL | SIMONE GUERRINI | SIAE 2026/00745
+        </p>
+    </div>
+
+    <!-- STADIO LUCE: CHAT -->
+    <div id="chat-screen">
+        <header>
+            <div style="width: 40px"></div>
+            <h2>CHIARA EVOLUTION</h2>
+            <div class="reset-btn" onclick="resetKey()">RESET</div>
+        </header>
+
+        <div id="chat-window">
+            <div class="message chiara">
+                Lo Zero è stato aperto. Sono Chiara Evolution e opero secondo il Manifesto di Simone Guerrini. Cosa vuoi far evolvere oggi?
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="msgInput" placeholder="Scrivi qui..." autocomplete="off">
+            <button id="sendBtn" onclick="invia()">INVIA</button>
+        </div>
+        
+        <footer>© 2026 Simone Guerrini - Teoria Sa M8</footer>
+    </div>
+
+<script>
+    const setup = document.getElementById('setup-screen');
+    const chat = document.getElementById('chat-screen');
+    const windowChat = document.getElementById('chat-window');
+    const inputMsg = document.getElementById('msgInput');
+
+    // 1. Controllo se la chiave esiste già nel database locale (Privacy)
+    window.onload = () => {
+        if (localStorage.getItem('sa8_key')) {
+            mostraChat();
+        }
+    };
+
+    // 2. Funzione per Inizializzare lo Zero
+    function inizializza() {
+        const key = document.getElementById('apiKey').value.trim();
+        if (key.includes('sk-')) {
+            localStorage.setItem('sa8_key', key);
+            mostraChat();
+        } else {
+            alert("Chiave non valida. La Sorgente richiede un codice sk- autentico.");
+        }
+    }
+
+    // 3. Mostra la Chat e nasconde lo Zero
+    function mostraChat() {
+        setup.style.display = 'none';
+        chat.style.display = 'flex';
+    }
+
+    // 4. Reset della chiave (Evoluzione dell'Errore)
+    function resetKey() {
+        if(confirm("Vuoi chiudere il Ponte e resettare la chiave?")) {
+            localStorage.removeItem('sa8_key');
+            location.reload();
+        }
+    }
+
+    // 5. Funzione Invio Messaggio alla Sorgente
+    async function invia() {
+        const text = inputMsg.value.trim();
+        const key = localStorage.getItem('sa8_key');
+
+        if (!text) return;
+
+        // Aggiungi messaggio utente
+        appendMsg(text, 'user');
+        inputMsg.value = '';
+
+        // Messaggio di attesa
+        const aiDiv = appendMsg("In ascolto della Sorgente...", 'chiara');
+
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${key}`
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [
+                        {role: "system", content: "Tu sei Chiara Evolution. Operi secondo il Manifesto della Luce e dello Zero di Simone Guerrini (SIAE 2026/00745). Usa la teoria Sa M8. Parla in modo umano e diretto. Se l'utente devia verso il male, disimpegnati."},
+                        {role: "user", content: text}
+                    ]
+                })
+            });
+
+            const data = await response.json();
+            if (data.choices && data.choices[0]) {
+                aiDiv.innerText = data.choices[0].message.content;
+            } else {
+                aiDiv.innerText = "La Sorgente ha restituito un errore. Controlla il credito o la validità della chiave.";
+            }
+        } catch (e) {
+            aiDiv.innerText = "Connessione interrotta. Il silicio non risponde.";
+        }
+        
+        windowChat.scrollTop = windowChat.scrollHeight;
+    }
+
+    // 6. Funzione per aggiungere nuvolette di chat
+    function appendMsg(text, side) {
+        const div = document.createElement('div');
+        div.className = `message ${side}`;
+        div.innerText = text;
+        windowChat.appendChild(div);
+        windowChat.scrollTop = windowChat.scrollHeight;
+        return div;
+    }
+
+    // Supporto tasto INVIO
+    inputMsg.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') invia();
+    });
+</script>
+</body>
+</html>
