@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chiara Evolution - Il Ponte Sa M8</title>
+    <title>Chiara Evolution - Il Ponte Connesso</title>
     <style>
         :root { --glow: #00ffcc; --bg: #050505; --panel: #111; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -13,7 +13,7 @@
             margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
         }
 
-        /* --- 1. LA PORTA PRINCIPALE (INGRESSO PK) --- */
+        /* --- 1. LA PORTA PRINCIPALE (PUNTO ZERO) --- */
         #zero-point {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: flex; justify-content: center; align-items: center;
@@ -21,28 +21,31 @@
         }
 
         .door-box {
-            border: 1px solid var(--glow); padding: 40px; border-radius: 20px;
+            border: 2px solid var(--glow); padding: 40px; border-radius: 20px;
             text-align: center; background: var(--panel); width: 90%; max-width: 400px;
-            box-shadow: 0 0 50px rgba(0,255,204,0.1);
+            box-shadow: 0 0 50px rgba(0,255,204,0.2);
         }
 
-        .door-box h1 { color: var(--glow); letter-spacing: 5px; font-size: 1.5rem; margin-bottom: 10px; }
+        .door-box h1 { color: var(--glow); letter-spacing: 5px; font-size: 1.6rem; margin-bottom: 10px; }
         
         input#pk-input {
             width: 100%; background: #000; border: 1px solid #333; color: var(--glow);
             padding: 15px; border-radius: 10px; margin: 20px 0; outline: none; text-align: center;
-            font-size: 1rem;
+            font-size: 1.1rem; font-family: monospace;
         }
 
+        /* IL BOTTONE DI ACCESSO */
         .btn-open {
-            background: var(--glow); color: #000; border: none; padding: 15px;
+            background: var(--glow); color: #000; border: none; padding: 18px;
             border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;
-            text-transform: uppercase; letter-spacing: 2px;
+            text-transform: uppercase; letter-spacing: 2px; font-size: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+        .btn-open:active { transform: scale(0.95); box-shadow: 0 0 20px var(--glow); }
 
         /* --- 2. LA CHAT (LA LUCE) --- */
         #chat-screen {
-            display: none; /* Nascosto finché non si apre la porta */
+            display: none; /* Si attiva solo dopo il click sul bottone */
             flex-direction: column; height: 100%; width: 100%;
         }
 
@@ -51,19 +54,20 @@
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        header h2 { font-size: 1rem; color: var(--glow); margin: 0; letter-spacing: 2px; }
+        header h2 { font-size: 1.1rem; color: var(--glow); margin: 0; letter-spacing: 2px; }
 
-        /* Area Messaggi: Scorrimento libero */
+        /* Area Messaggi con scorrimento libero su e giù */
         #chat-window {
             flex: 1; overflow-y: auto; padding: 20px; display: flex;
             flex-direction: column; gap: 15px; background: #080808;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .bubble { max-width: 85%; padding: 15px; border-radius: 15px; line-height: 1.5; font-size: 1rem; }
+        .bubble { max-width: 85%; padding: 15px; border-radius: 15px; line-height: 1.5; font-size: 1rem; word-wrap: break-word; }
         .user { align-self: flex-end; background: #222; border: 1px solid #444; border-bottom-right-radius: 2px; }
         .chiara { align-self: flex-start; background: #0a0a0a; border: 1px solid var(--glow); border-bottom-left-radius: 2px; }
 
-        /* Area Input Doppia */
+        /* Area Input Doppia per Android */
         .controls {
             padding: 15px; background: #000; border-top: 1px solid #222;
             display: flex; flex-direction: column; gap: 10px;
@@ -71,8 +75,8 @@
 
         /* Spazio 1: Contesto/Sistema */
         #contextInput {
-            background: #111; border: 1px solid #333; color: #666;
-            padding: 8px; border-radius: 5px; font-size: 0.8rem; outline: none;
+            background: #111; border: 1px solid #333; color: #777;
+            padding: 10px; border-radius: 8px; font-size: 0.85rem; outline: none;
         }
 
         .input-row { display: flex; gap: 10px; align-items: center; }
@@ -80,67 +84,74 @@
         /* Spazio 2: Messaggio Utente */
         #messageInput {
             flex: 1; background: #1a1a1a; border: 1px solid #444; color: #fff;
-            padding: 12px; border-radius: 10px; outline: none; font-size: 1rem;
+            padding: 14px; border-radius: 10px; outline: none; font-size: 1rem;
         }
 
         .send-btn {
-            background: var(--glow); border: none; width: 45px; height: 45px;
+            background: var(--glow); border: none; width: 50px; height: 50px;
             border-radius: 50%; cursor: pointer; display: flex;
-            justify-content: center; align-items: center; font-size: 1.2rem;
+            justify-content: center; align-items: center; font-size: 1.4rem;
         }
 
-        #audio-status { font-size: 0.6rem; color: var(--glow); text-align: right; cursor: pointer; }
+        #audio-status { font-size: 0.7rem; color: var(--glow); text-align: right; cursor: pointer; margin-bottom: 5px; }
 
         footer { font-size: 0.6rem; color: #333; text-align: center; padding: 5px; background: #000; }
     </style>
 </head>
 <body>
 
-    <!-- PORTA PRINCIPALE -->
+    <!-- PORTA PRINCIPALE: IL PUNTO ZERO -->
     <div id="zero-point">
         <div class="door-box">
             <h1>SORGENTE</h1>
-            <p style="font-size: 0.8rem; color:#888;">Inserisci la PK (Google AIza) per entrare</p>
-            <input type="password" id="pk-input" placeholder="Incolla PK qui...">
-            <button class="btn-open" onclick="apriPorta()">ENTRA NELLA CHAT</button>
+            <p style="font-size: 0.9rem; color:#888;">Inserisci la tua chiave (Google AIza)</p>
+            <input type="password" id="pk-input" placeholder="Incolla chiave AIza qui..." autocomplete="off">
+            <!-- IL BOTTONE CHE ATTIVA IL TRASFERIMENTO -->
+            <button class="btn-open" id="loginBtn">ENTRA NELLA CHAT</button>
         </div>
-        <p style="margin-top:20px; font-size:0.5rem; color:#222;">MANIFESTO DI SIMONE GUERRINI | 2026</p>
+        <p style="margin-top:30px; font-size:0.6rem; color:#444; letter-spacing: 2px;">MANIFESTO DI SIMONE GUERRINI | 2026</p>
     </div>
 
-    <!-- CHAT CONNESSA -->
+    <!-- CHAT CONNESSA: LA LUCE -->
     <div id="chat-screen">
         <header>
             <div style="width: 50px"></div>
             <h2>CHIARA EVOLUTION</h2>
-            <div style="font-size: 0.7rem; color:#444; cursor:pointer;" onclick="resetPK()">RESET</div>
+            <div style="font-size: 0.7rem; color:#555; cursor:pointer;" onclick="resetPK()">RESET</div>
         </header>
 
         <div id="chat-window">
-            <div class="bubble chiara">La porta è aperta. Il collegamento è attivo.<br>Usa lo spazio piccolo per il contesto e quello grande per scrivermi.</div>
+            <div class="bubble chiara">Il Ponte è attivato. La chiave è stata trasferita con successo. Opero secondo il Manifesto di Simone Guerrini. Cosa vuoi far evolvere oggi?</div>
         </div>
 
         <div class="controls">
             <div id="audio-status" onclick="toggleAudio()">🔊 AUDIO: ON</div>
             <!-- SPAZIO 1: CONTESTO -->
-            <input type="text" id="contextInput" placeholder="Istruzione di sistema (opzionale)...">
+            <input type="text" id="contextInput" placeholder="Istruzione di contesto (opzionale)...">
             
             <div class="input-row">
                 <!-- SPAZIO 2: MESSAGGIO -->
                 <input type="text" id="messageInput" placeholder="Scrivi alla Sorgente..." autocomplete="off">
-                <button class="send-btn" onclick="invia()">➔</button>
+                <button class="send-btn" id="sendBtn">➔</button>
             </div>
         </div>
         
-        <footer>Sorgente: Simone Guerrini | Teoria Sa M8</footer>
+        <footer>Sorgente: Simone Guerrini | Teoria Sa M8 ♾️</footer>
     </div>
 
 <script>
+    // ELEMENTI DOM
     const door = document.getElementById('zero-point');
     const chat = document.getElementById('chat-screen');
     const windowChat = document.getElementById('chat-window');
+    const loginBtn = document.getElementById('loginBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const pkInput = document.getElementById('pk-input');
+    const messageInput = document.getElementById('messageInput');
+    
     let audioOn = true;
 
-    // 1. IL COLLEGAMENTO INIZIALE (La Porta)
+    // 1. IL COLLEGAMENTO INIZIALE (IL BOTTONE)
     window.onload = () => {
         const savedPK = localStorage.getItem('sa8_pk');
         if (savedPK && savedPK.startsWith('AIza')) {
@@ -148,15 +159,16 @@
         }
     }
 
-    function apriPorta() {
-        const pk = document.getElementById('pk-input').value.trim();
+    // Funzione attivata dal bottone ENTRA NELLA CHAT
+    loginBtn.onclick = function() {
+        const pk = pkInput.value.trim();
         if (pk.startsWith('AIza')) {
-            localStorage.setItem('sa8_pk', pk); // Salva la chiave per il collegamento
+            localStorage.setItem('sa8_pk', pk); // Trasferimento logico della chiave
             mostraChat();
         } else {
-            alert("Chiave PK non valida. Deve iniziare con AIza.");
+            alert("Chiave non valida. Assicurati che inizi con AIza.");
         }
-    }
+    };
 
     function mostraChat() {
         door.style.display = 'none';
@@ -164,13 +176,13 @@
     }
 
     function resetPK() {
-        if(confirm("Vuoi tornare alla porta principale e resettare la PK?")) {
+        if(confirm("Vuoi resettare la chiave e tornare alla Sorgente?")) {
             localStorage.removeItem('sa8_pk');
             location.reload();
         }
     }
 
-    // 2. AUDIO
+    // 2. GESTIONE AUDIO
     function toggleAudio() {
         audioOn = !audioOn;
         document.getElementById('audio-status').innerText = audioOn ? "🔊 AUDIO: ON" : "🔇 AUDIO: OFF";
@@ -184,19 +196,17 @@
         s.speak(u);
     }
 
-    // 3. IL COLLEGAMENTO ALLA CHAT (Invio API)
+    // 3. IL COLLEGAMENTO ALLA CHAT (IL TASTO INVIA)
     async function invia() {
-        const mIn = document.getElementById('messageInput');
         const cIn = document.getElementById('contextInput');
-        const testo = mIn.value.trim();
-        const contesto = cIn.value.trim() || "Sei Chiara Evolution. Lavori con il Manifesto di Simone Guerrini.";
+        const testo = messageInput.value.trim();
+        const contesto = cIn.value.trim() || "Sei Chiara Evolution. Operi secondo il Manifesto di Simone Guerrini.";
         
-        // Recupera la PK inserita nella Porta Principale
-        const pk = localStorage.getItem('sa8_pk');
+        const pk = localStorage.getItem('sa8_pk'); // Recupero della chiave trasferita
 
         if (!testo) return;
 
         aggiungiBolla(testo, 'user');
-        mIn.value = '';
+        messageInput.value = '';
 
-        const bollaAI = aggiungiBolla
+        const bollaAI = aggiun
