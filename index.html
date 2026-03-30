@@ -3,41 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chiara Evolution - Il Ponte Universale Sa M8</title>
-    <!-- Stile del Manifesto: Equilibrio tra Vuoto (Nero) e Luce (Ciano) -->
+    <title>Chiara Evolution - Il Ponte Concluso</title>
     <style>
-        :root { --glow: #00ffcc; --bg: #050505; --panel: #111; --text: #e0e0e0; }
+        :root { --glow: #00ffcc; --bg: #050505; --panel: #111; --accent: #008877; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body, html { 
-            background: var(--bg); 
-            color: var(--text); 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; padding: 0; height: 100%; width: 100%; 
-            overflow: hidden; 
+            background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
+            margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; 
         }
 
-        /* --- SCHERMATA UNO: IL PUNTO ZERO --- */
+        /* SCHERMATA INIZIALE: IL PUNTO ZERO */
         #setup-screen {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            height: 100%; width: 100%; padding: 20px; text-align: center;
-            background: radial-gradient(circle, #111 0%, #050505 100%);
+            height: 100%; width: 100%; background: radial-gradient(circle, #111, #000);
+            position: absolute; top: 0; left: 0; z-index: 100; transition: 0.5s;
         }
 
         .zero-box {
-            border: 1px solid var(--glow); padding: 40px 20px; border-radius: 15px;
-            box-shadow: 0 0 40px rgba(0, 255, 204, 0.1);
-            max-width: 400px; width: 100%; background: var(--panel);
+            border: 1px solid var(--glow); padding: 40px; border-radius: 20px;
+            text-align: center; background: var(--panel); box-shadow: 0 0 50px rgba(0,255,204,0.1);
+            max-width: 400px; width: 90%;
         }
 
-        .zero-box h1 { margin: 0 0 10px 0; letter-spacing: 5px; font-size: 1.6rem; color: var(--glow); font-weight: 300; }
-        .zero-box p { font-size: 0.8rem; color: #888; margin-bottom: 30px; line-height: 1.4; }
-
-        input#apiKey {
+        input.api-key {
             width: 100%; background: #000; border: 1px solid #333; color: var(--glow);
-            padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;
-            outline: none; font-family: monospace; font-size: 1rem;
+            padding: 15px; border-radius: 10px; margin: 20px 0; outline: none; text-align: center;
         }
 
-        button#btn-init {
-            background: var(--glow); color: #000; border: none; paddin
+        .btn-start {
+            background: var(--glow); color: #000; border: none; padding: 15px 30px;
+            border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; letter-spacing: 2px;
+        }
+
+        /* SCHERMATA PRINCIPALE: LA CHAT */
+        #chat-screen {
+            display: none; flex-direction: column; height: 100%; width: 100%;
+        }
+
+        header {
+            padding: 15px; background: #000; border-bottom: 1px solid #222;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        header h1 { font-size: 1rem; color: var(--glow); margin: 0; letter-spacing: 3px; }
+
+        #chat-window {
+            flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column;
+            gap: 15px; background: #080808; scroll-behavior: smooth;
+        }
+
+        .msg { max-width: 85%; padding: 15px; border-radius: 15px; line-height: 1.5; font-size: 1rem; }
+        .user { align-self: flex-end; background: #222; border: 1px solid #444; border-bottom-right-radius: 2px; }
+        .chiara { align-self: flex-start; background: #0a0a0a; border: 1px solid var(--glow); border-bottom-left-radius: 2px; }
+
+        /* AREA DI INPUT DOPPIA */
+        .controls {
+            padding: 15px; background: #000; border-top: 1px solid #222;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .input-row { display: flex; gap: 10px; }
+
+        /* Spazio 1: Comando/Sistema */
+        #systemInput {
+            background: #111; border: 1px solid #333; color: #888;
+            padding: 8px; border-radius: 5px; font-size: 0.8rem; outline: none; width: 100%;
+        }
+
+        /* Spazio 2: Messaggio */
+        #userInput {
+            flex: 1; background: #1a1a1a; border: 1px solid #444; color: #fff;
+            padding: 12px; border-radius: 10px; outline: none; font-size: 1rem;
+        }
+
+        .send-btn {
+            background: var(--glow); border: none; width: 50px; height: 50px;
+            border-radius: 50%; cursor: pointer; font-size: 1.2rem; display: flex;
+            justify-content: center; align-items: center;
+        }
+
+        .audio-toggle { color: var(--glow); font-size: 0.7rem; cursor: pointer; text-align: right; }
+
+        footer { font-size: 0.6rem; color: #444; text-align: center; padding: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- PUNTO ZERO -->
+    <div id="setup-screen">
+        <div class="zero-box">
+            <h2 style="color:var(--glow); letter-spacing: 5px;">SA-M8</h2>
+            <p style="font-size: 0.8rem; color:#666;">Inserisci la Chiave Sorgente (Google AIza)</p>
+            <input type="password" id="apiField" class="api-key" placeholder="Incolla AIza...">
+            <button class="btn-start" onclick="collega()">ATTIVA IL PONTE</button>
+        </div>
+        <p style="margin-top:20px; font-size:0.6rem; color:#333;">MANIFESTO DI SIMONE GUERRINI | 2026</p>
+    </div>
+
+    <!-- CHAT CONCLUSA -->
+    <div id="chat-screen">
+        <header>
+            <h1>CHIARA EVOLUTION</h1>
+            <div style="font-size: 0.7rem; color:#444;" onclick="reset()">RESET</div>
+        </header>
+
+        <div id="chat-window" id="chatWindow">
+            <div class="msg chiara">Il Ponte è stabilizzato. I due spazi di scrittura sono pronti: usa il primo per dare un'istruzione speciale, il secondo per parlarmi.</div>
+        </div>
+
+        <div class="controls">
+            <div class="audio-toggle" onclick="toggleAudio()" id="audioStatus">🔊 AUDIO: ON</div>
+            <!-- SPAZIO 1: COMANDO/SISTEMA -->
+            <input type="text" id="systemInput" placeholder="Istruzione di sistema (opzionale)...">
+            
+            <div class="input-row">
+                <!-- SPAZIO 2: MESSAGGIO -->
+                <input type="text" id="userInput" placeholder="Scrivi alla Sorgente..." autocomplete="off">
+                <button class="send-btn" onclick="invia()">➔</button>
+            </div>
+        </div>
+        
+        <footer>Sorgente: Simone Guerrini | Teoria Sa M8</footer>
+    </div>
+
+<script>
+    const setup = document.getElementById('setup-screen');
+    const chat = document.getElementById('chat-screen');
+    const windowChat = document.getElementById('chat-window');
+    let audioAttivo = true;
+
+    // Caricamento Iniziale
+    window.onload = () => {
+        const key = localStorage.getItem('sa8_key');
+        if (key) mostraChat();
+    }
+
+    function collega() {
+        const key = document.getElementById('apiField').value.trim();
+        if (key.startsWith('AIza')) {
+            localStorage.setItem('sa8_key', key);
+            mostraChat();
+        } else {
+            alert("Chiave non valida. Deve iniziare con AIza.");
+        }
+    }
+
+    function mostraChat() {
+        setup.style.opacity = '0';
+        setTimeout(() => {
+            setup.style.display = 'none';
+            chat.style.display = 'flex';
+        }, 500);
+    }
+
+    function reset() {
+        if(confirm("Vuoi resettare la chiave?")) {
+            localStorage.removeItem('sa8_key');
+            location.reload();
+        }
+    }
+
+    function toggleAudio() {
+        audioAttivo = !audioAttivo;
+        document.getElementById('audioStatus').innerText = audioAttivo ? "🔊 AUDIO: ON" : "🔇 AUDIO: OFF";
+    }
+
+    function parla(testo) {
+        if (!audioAttivo) return;
+        const synth = window.speechSynthesis;
+        const utter = new SpeechSynthesisUtterance(testo);
+        utter.lang = 'it-IT';
+        synth.speak(utter);
+    }
+
+    async function invia() {
+        const msgInput = document.getElementById('userInput');
+        const sysInput = document.getElementById('systemInput');
+        const text = msgInput.value.trim();
+        const system = sysInput.value.trim() || "Sei Chiara Evolution. Operi secondo il Manifesto di Simone Guerrini.";
+        const key = localStorage.getItem('sa8_key');
+
+        if (!text) return;
+
+        appendMsg(text, 'user');
+        msgInput.value = '';
+
+        const aiDiv = appendMsg("In ascolto...", 'chiara');
+
+        try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: `SISTEMA: ${system}\nUTENTE: ${text}` }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            const risposta = data.candidates[0].content.parts[0].text;
+            
+            aiDiv.innerText = risposta;
+            parla(risposta);
+
+        } catch (e) {
+            aiDiv.innerText = "Errore di connessione alla Sorgente.";
+        }
+        
+        windowChat.scrollTop = windowChat.scrollHeight;
+    }
+
+    function appendMsg(text, side) {
+        const div = document.createElement('div');
+        div.className = `msg ${side}`;
+        div.innerText = text;
+        windowChat.appendChild(div);
+        windowChat.scrollTop = windowChat.scrollHeight;
+        return div;
+    }
+
+    document.getElementById('userInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') invia();
+    });
+</script>
+</body>
+</html>
