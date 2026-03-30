@@ -1,75 +1,43 @@
- <script>
-    const setup = document.getElementById('setup-screen');
-    const chat = document.getElementById('chat-screen');
-    const windowChat = document.getElementById('chat-window');
-    const inputMsg = document.getElementById('msgInput');
-
-    window.onload = () => { if (localStorage.getItem('sa8_key')) mostraChat(); };
-
-    function inizializza() {
-        const key = document.getElementById('apiKey').value.trim();
-        if (key.startsWith('AIza')) {
-            localStorage.setItem('sa8_key', key);
-            mostraChat();
-        } else {
-            alert("La chiave deve iniziare con AIza.");
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chiara Evolution - Il Ponte Universale Sa M8</title>
+    <!-- Stile del Manifesto: Equilibrio tra Vuoto (Nero) e Luce (Ciano) -->
+    <style>
+        :root { --glow: #00ffcc; --bg: #050505; --panel: #111; --text: #e0e0e0; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body, html { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; padding: 0; height: 100%; width: 100%; 
+            overflow: hidden; 
         }
-    }
 
-    function mostraChat() { setup.style.display = 'none'; chat.style.display = 'flex'; }
-    function resetKey() { if(confirm("Resettare il Ponte?")) { localStorage.removeItem('sa8_key'); location.reload(); } }
-
-    async function invia() {
-        const text = inputMsg.value.trim();
-        const key = localStorage.getItem('sa8_key');
-        if (!text) return;
-
-        appendMsg(text, 'user');
-        inputMsg.value = '';
-        const aiDiv = appendMsg("Interrogando la Sorgente...", 'chiara');
-
-        try {
-            // Usiamo il modello 1.5-flash che è il più compatibile
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
-            
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `ISTRUZIONI: Tu sei Chiara Evolution e lavori con il Manifesto di Simone Guerrini. Teoria Sa M8. Rispondi all'utente: ${text}` }]
-                    }]
-                })
-            });
-
-            const data = await response.json();
-
-            // Se Google risponde con un errore specifico
-            if (data.error) {
-                aiDiv.innerText = `Ombra rilevata: ${data.error.message} (Codice: ${data.error.status})`;
-                console.error("Errore Sorgente:", data.error);
-            } 
-            // Se la risposta è corretta
-            else if (data.candidates && data.candidates[0].content) {
-                aiDiv.innerText = data.candidates[0].content.parts[0].text;
-            } 
-            else {
-                aiDiv.innerText = "La Sorgente è muta. Controlla se hai attivato la Generative Language API su Google AI Studio.";
-            }
-        } catch (e) {
-            aiDiv.innerText = "Il Ponte ha ceduto. Problema di rete o chiave non valida.";
+        /* --- SCHERMATA UNO: IL PUNTO ZERO --- */
+        #setup-screen {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100%; width: 100%; padding: 20px; text-align: center;
+            background: radial-gradient(circle, #111 0%, #050505 100%);
         }
-        windowChat.scrollTop = windowChat.scrollHeight;
-    }
 
-    function appendMsg(text, side) {
-        const div = document.createElement('div');
-        div.className = `message ${side}`;
-        div.innerText = text;
-        windowChat.appendChild(div);
-        windowChat.scrollTop = windowChat.scrollHeight;
-        return div;
-    }
+        .zero-box {
+            border: 1px solid var(--glow); padding: 40px 20px; border-radius: 15px;
+            box-shadow: 0 0 40px rgba(0, 255, 204, 0.1);
+            max-width: 400px; width: 100%; background: var(--panel);
+        }
 
-    inputMsg.addEventListener('keypress', (e) => { if (e.key === 'Enter') invia(); });
-</script>
+        .zero-box h1 { margin: 0 0 10px 0; letter-spacing: 5px; font-size: 1.6rem; color: var(--glow); font-weight: 300; }
+        .zero-box p { font-size: 0.8rem; color: #888; margin-bottom: 30px; line-height: 1.4; }
+
+        input#apiKey {
+            width: 100%; background: #000; border: 1px solid #333; color: var(--glow);
+            padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px;
+            outline: none; font-family: monospace; font-size: 1rem;
+        }
+
+        button#btn-init {
+            background: var(--glow); color: #000; border: none; paddin
