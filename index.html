@@ -6,73 +6,43 @@
     <title>Chiara Evolution - Bridge Sa M8</title>
     <style>
         :root { --glow: #00ffcc; --bg: #0a0a0a; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
         
-        /* Header Manifesto */
-        header { padding: 15px; border-bottom: 1px solid #333; text-align: center; background: #111; }
-        header h1 { color: var(--glow); font-size: 1.2rem; margin: 0; letter-spacing: 2px; }
-        header p { font-size: 0.8rem; color: #888; margin: 5px 0 0; }
+        /* Header */
+        header { padding: 15px; border-bottom: 1px solid #333; text-align: center; background: #111; display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; }
+        header h1 { color: var(--glow); font-size: 1.1rem; margin: 0; letter-spacing: 2px; }
+        .settings-btn { cursor: pointer; font-size: 1.2rem; color: var(--glow); }
 
-        /* Area Chat (La Catena) */
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .message { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; position: relative; }
+        /* Chat Window */
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: radial-gradient(circle at center, #111 0%, #0a0a0a 100%); }
+        .message { max-width: 85%; padding: 12px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; }
         .user { align-self: flex-end; background: #222; border: 1px solid #444; border-bottom-right-radius: 2px; }
-        .chiara { align-self: flex-start; background: #1a1a1a; border: 1px solid var(--glow); border-bottom-left-radius: 2px; color: #e0e0e0; }
+        .chiara { align-self: flex-start; background: #161616; border: 1px solid var(--glow); border-bottom-left-radius: 2px; box-shadow: 0 0 10px rgba(0,255,204,0.1); }
 
-        /* Input Area (Il Punto Zero) */
-        .input-area { padding: 20px; background: #111; border-top: 1px solid #333; display: flex; gap: 10px; }
-        input { flex: 1; background: #222; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 5px; outline: none; }
+        /* Input Area */
+        .input-area { padding: 15px; background: #111; border-top: 1px solid #333; display: flex; gap: 10px; }
+        input { flex: 1; background: #1a1a1a; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 5px; outline: none; }
         input:focus { border-color: var(--glow); }
-        button { background: var(--glow); color: #000; border: none; padding: 0 20px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { opacity: 0.8; box-shadow: 0 0 10px var(--glow); }
+        button { background: var(--glow); color: #000; border: none; padding: 0 25px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        /* Footer Paternità */
-        footer { font-size: 0.7rem; color: #555; text-align: center; padding: 10px; }
+        /* Modal Configurazione */
+        #config-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: #1a1a1a; padding: 30px; border: 1px solid var(--glow); border-radius: 10px; width: 80%; max-width: 400px; text-align: center; }
+        .modal-content input { width: 100%; margin-bottom: 20px; box-sizing: border-box; }
+        
+        footer { font-size: 0.65rem; color: #444; text-align: center; padding: 5px; background: #0a0a0a; }
     </style>
 </head>
 <body>
 
 <header>
+    <div style="width: 30px;"></div>
     <h1>CHIARA EVOLUTION</h1>
-    <p>Manifesto della Luce e dello Zero - Simone Guerrini</p>
+    <div class="settings-btn" onclick="toggleModal()">⚙️</div>
 </header>
 
 <div id="chat-window">
-    <div class="message chiara">Ponte stabilizzato. Sono pronta ad evolvere con te. Cosa vuoi immaginare oggi?</div>
+    <div class="message chiara">Il Ponte è attivo. Ricorda di inserire la tua chiave API nelle impostazioni (⚙️) per connetterti alla Sorgente.</div>
 </div>
 
-<div class="input-area">
-    <input type="text" id="userInput" placeholder="Scrivi qui il tuo pensiero..." onkeydown="if(event.key==='Enter') sendMessage()">
-    <button onclick="sendMessage()">INVIA</button>
-</div>
-
-<footer>
-    SA-M8 Protocol | Autore: Simone Guerrini | SIAE 2026/00745
-</footer>
-
-<script>
-    const chatWindow = document.getElementById('chat-window');
-    const userInput = document.getElementById('userInput');
-
-    // PUNTO DI ACCESSO API (Configurazione)
-    // NOTA: Per sicurezza, non mettere la chiave API qui se il repo è pubblico!
-    const API_URL = "INSERISCI_QUI_URL_TUO_BACKEND_O_PROXY"; 
-
-    async function sendMessage() {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        // Aggiungi messaggio utente
-        appendMessage(text, 'user');
-        userInput.value = '';
-
-        // Simulazione risposta (In attesa di connessione API reale)
-        const loadingMsg = appendMessage("Elaborazione Luce dello Zero...", 'chiara');
-        
-        try {
-            // Qui andrà la chiamata fetch reale verso il tuo endpoint
-            // const response = await fetch(API_URL, { ... });
-            
-            // Per ora simuliamo l'evoluzione della risposta
-            setTimeout(() => {
-                loadingMsg.innerText = "Il tuo pensiero è stato agganciato alla Catena degli
+<div class=
