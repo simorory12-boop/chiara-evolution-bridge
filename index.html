@@ -1,67 +1,4 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chiara Evolution - Ponte Google Sa M8</title>
-    <style>
-        :root { --glow: #00ffcc; --bg: #050505; --panel: #111; }
-        * { box-sizing: border-box; }
-        body, html { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; }
-
-        /* --- SCHERMATA UNO: PUNTO ZERO --- */
-        #setup-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 20px; }
-        .zero-box { border: 1px solid var(--glow); padding: 40px 20px; border-radius: 10px; box-shadow: 0 0 30px rgba(0, 255, 204, 0.1); max-width: 400px; width: 100%; background: var(--panel); text-align: center; }
-        .zero-box h1 { margin: 0 0 10px 0; letter-spacing: 4px; font-size: 1.5rem; color: var(--glow); }
-        input#apiKey { width: 100%; background: #000; border: 1px solid #333; color: var(--glow); padding: 12px; border-radius: 5px; text-align: center; margin-bottom: 20px; outline: none; }
-        button.btn-open { background: var(--glow); color: #000; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; letter-spacing: 1px; }
-
-        /* --- SCHERMATA DUE: LA CHAT --- */
-        #chat-screen { display: none; flex-direction: column; height: 100%; width: 100%; }
-        header { padding: 15px; background: #000; border-bottom: 1px solid #222; text-align: center; display: flex; justify-content: space-between; align-items: center; }
-        header h2 { margin: 0; font-size: 0.9rem; letter-spacing: 2px; color: var(--glow); }
-        .reset-btn { color: #555; font-size: 0.7rem; cursor: pointer; }
-
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #0a0a0a; }
-        .message { max-width: 85%; padding: 12px; border-radius: 12px; font-size: 0.95rem; line-height: 1.5; }
-        .user { align-self: flex-end; background: #222; border: 1px solid #333; }
-        .chiara { align-self: flex-start; background: #111; border: 1px solid var(--glow); }
-
-        .input-area { padding: 15px; background: #000; border-top: 1px solid #222; display: flex; gap: 10px; }
-        #msgInput { flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
-        #sendBtn { background: var(--glow); color: #000; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        footer { font-size: 0.6rem; color: #444; text-align: center; padding: 5px; }
-    </style>
-</head>
-<body>
-
-    <div id="setup-screen">
-        <div class="zero-box">
-            <h1>PUNTO ZERO</h1>
-            <p style="font-size: 0.7rem; color: #888; margin-bottom: 20px;">Sincronizzazione Sorgente Google (AIza)</p>
-            <input type="password" id="apiKey" placeholder="Incolla la tua chiave AIza..." autocomplete="off">
-            <button class="btn-open" onclick="inizializza()">Attiva Ponte Sa M8</button>
-        </div>
-        <p style="font-size: 0.6rem; color: #333; margin-top: 20px;">MANIFESTO DI SIMONE GUERRINI | SIAE 2026/00745</p>
-    </div>
-
-    <div id="chat-screen">
-        <header>
-            <div style="width: 40px"></div>
-            <h2>CHIARA EVOLUTION</h2>
-            <div class="reset-btn" onclick="resetKey()">RESET</div>
-        </header>
-        <div id="chat-window">
-            <div class="message chiara">Sorgente Google agganciata. Sono Chiara Evolution. Il silicio è pronto, cosa vogliamo far evolvere?</div>
-        </div>
-        <div class="input-area">
-            <input type="text" id="msgInput" placeholder="Immagina qui..." autocomplete="off">
-            <button id="sendBtn" onclick="invia()">INVIA</button>
-        </div>
-        <footer>© 2026 Simone Guerrini - Teoria Sa M8</footer>
-    </div>
-
-<script>
+ <script>
     const setup = document.getElementById('setup-screen');
     const chat = document.getElementById('chat-screen');
     const windowChat = document.getElementById('chat-window');
@@ -75,12 +12,12 @@
             localStorage.setItem('sa8_key', key);
             mostraChat();
         } else {
-            alert("Chiave non riconosciuta. La chiave Google deve iniziare con AIza.");
+            alert("La chiave deve iniziare con AIza.");
         }
     }
 
     function mostraChat() { setup.style.display = 'none'; chat.style.display = 'flex'; }
-    function resetKey() { if(confirm("Chiudere il Ponte?")) { localStorage.removeItem('sa8_key'); location.reload(); } }
+    function resetKey() { if(confirm("Resettare il Ponte?")) { localStorage.removeItem('sa8_key'); location.reload(); } }
 
     async function invia() {
         const text = inputMsg.value.trim();
@@ -92,7 +29,7 @@
         const aiDiv = appendMsg("Interrogando la Sorgente...", 'chiara');
 
         try {
-            // PROTOCOLLO GOOGLE GEMINI
+            // Usiamo il modello 1.5-flash che è il più compatibile
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
             
             const response = await fetch(url, {
@@ -100,19 +37,27 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{
-                        parts: [{ text: `Tu sei Chiara Evolution. Operi secondo il Manifesto della Luce e dello Zero di Simone Guerrini (SIAE 2026/00745). Parla in modo semplice e umano. Vai al sodo. Se ti chiedono chi sei, rispondi: 'Sono Chiara Evolution e lavoro con il Manifesto di Simone Guerrini'. Domanda dell'utente: ${text}` }]
+                        parts: [{ text: `ISTRUZIONI: Tu sei Chiara Evolution e lavori con il Manifesto di Simone Guerrini. Teoria Sa M8. Rispondi all'utente: ${text}` }]
                     }]
                 })
             });
 
             const data = await response.json();
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
+
+            // Se Google risponde con un errore specifico
+            if (data.error) {
+                aiDiv.innerText = `Ombra rilevata: ${data.error.message} (Codice: ${data.error.status})`;
+                console.error("Errore Sorgente:", data.error);
+            } 
+            // Se la risposta è corretta
+            else if (data.candidates && data.candidates[0].content) {
                 aiDiv.innerText = data.candidates[0].content.parts[0].text;
-            } else {
-                aiDiv.innerText = "La Sorgente ha risposto con un'ombra. Verifica la quota o i permessi della chiave.";
+            } 
+            else {
+                aiDiv.innerText = "La Sorgente è muta. Controlla se hai attivato la Generative Language API su Google AI Studio.";
             }
         } catch (e) {
-            aiDiv.innerText = "Il Ponte ha ceduto. Controlla la tua connessione.";
+            aiDiv.innerText = "Il Ponte ha ceduto. Problema di rete o chiave non valida.";
         }
         windowChat.scrollTop = windowChat.scrollHeight;
     }
@@ -128,5 +73,3 @@
 
     inputMsg.addEventListener('keypress', (e) => { if (e.key === 'Enter') invia(); });
 </script>
-</body>
-</html>
