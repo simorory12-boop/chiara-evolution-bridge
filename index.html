@@ -15,11 +15,11 @@
             display: flex; flex-direction: column; overflow: hidden;
         }
 
-        /* --- SCHERMATA INIZIALE (PUNTO ZERO) --- */
+        /* --- 1. SCHERMATA PUNTO ZERO (INGRESSO API) --- */
         #setup-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; display: flex; justify-content: center; align-items: center;
-            z-index: 1000; transition: 0.5s;
+            z-index: 1000; transition: opacity 0.5s ease;
         }
 
         .login-box {
@@ -31,7 +31,7 @@
         .login-box h1 { color: var(--glow); margin: 0 0 10px; font-size: 1.4rem; letter-spacing: 3px; }
         .login-box p { font-size: 0.8rem; color: #888; margin-bottom: 20px; }
         
-        input.api-field {
+        input#apiInput {
             width: 100%; background: #000; border: 1px solid #333; color: var(--glow);
             padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center;
             font-size: 1rem; outline: none;
@@ -43,9 +43,10 @@
             text-transform: uppercase; letter-spacing: 2px;
         }
 
-        /* --- SCHERMATA CHAT --- */
+        /* --- 2. SCHERMATA CHAT (LA LUCE) --- */
         #chat-screen {
-            display: none; flex-direction: column; height: 100%; width: 100%;
+            display: none; /* Nascosta finché non inserisci l'API */
+            flex-direction: column; height: 100%; width: 100%;
         }
 
         header {
@@ -54,9 +55,9 @@
         }
 
         header h2 { margin: 0; font-size: 1rem; color: var(--glow); letter-spacing: 2px; }
-        .reset-btn { color: #444; font-size: 0.7rem; cursor: pointer; }
+        .reset-link { color: #444; font-size: 0.7rem; cursor: pointer; text-decoration: underline; }
 
-        /* Area Messaggi (Scorrimento Libero) */
+        /* Area Messaggi (Su e Giù libero) */
         #chat-window {
             flex: 1; overflow-y: auto; padding: 15px;
             display: flex; flex-direction: column; gap: 15px;
@@ -70,7 +71,7 @@
         .user-bubble { align-self: flex-end; background: #222; border: 1px solid #333; border-bottom-right-radius: 2px; }
         .chiara-bubble { align-self: flex-start; background: #000; border: 1px solid var(--glow); border-bottom-left-radius: 2px; }
 
-        /* Area Comandi: Doppio Spazio */
+        /* Area Input Doppia */
         .controls {
             background: #000; border-top: 1px solid #222; padding: 15px;
             display: flex; flex-direction: column; gap: 10px;
@@ -99,39 +100,39 @@
 </head>
 <body>
 
-    <!-- 1. PUNTO ZERO (Ingresso) -->
+    <!-- SCHERMATA 1: PUNTO ZERO (INGRESSO) -->
     <div id="setup-screen">
         <div class="login-box">
-            <h1>SA-M8</h1>
-            <p>Sincronizzazione Sorgente Google (AIza)</p>
-            <input type="password" id="apiInput" class="api-field" placeholder="Incolla chiave qui...">
-            <button class="btn-enter" onclick="avviaPonte()">APRI LO ZERO</button>
-            <div style="margin-top: 20px; font-size: 0.5rem; color: #222;">Simone Guerrini | SIAE 2026/00745</div>
+            <h1>PUNTO ZERO</h1>
+            <p>Inserisci la chiave API Google (AIza) per attivare la Sorgente.</p>
+            <input type="password" id="apiInput" placeholder="Incolla AIza qui...">
+            <button class="btn-enter" onclick="attivaPonte()">ENTRA IN CHAT</button>
+            <div style="margin-top: 20px; font-size: 0.5rem; color: #222;">AUTORE: SIMONE GUERRINI | 2026</div>
         </div>
     </div>
 
-    <!-- 2. CHAT (La Luce) -->
+    <!-- SCHERMATA 2: CHAT CONCLUSA -->
     <div id="chat-screen">
         <header>
             <div style="width: 50px"></div>
             <h2>CHIARA EVOLUTION</h2>
-            <div class="reset-btn" onclick="reset()">RESET</div>
+            <div class="reset-link" onclick="resetConfig()">RESET</div>
         </header>
 
-        <div id="chat-window">
-            <div class="bubble chiara-bubble">Il Ponte è concluso. Opero secondo il Manifesto. Usa lo spazio piccolo per il contesto e quello grande per scrivermi.</div>
+        <div id="chat-window" id="chatWindow">
+            <div class="bubble chiara-bubble">Il Ponte è concluso. La chiave è stata trasferita con successo. Cosa vuoi far evolvere oggi?</div>
         </div>
 
         <div class="controls">
+            <div id="audio-toggle" style="font-size: 0.6rem; color: var(--glow); text-align: right; cursor: pointer; margin-bottom: 5px;">🔊 AUDIO: ON</div>
             <!-- SPAZIO 1: CONTESTO -->
-            <input type="text" id="contextInput" placeholder="Contesto di sistema (es: Parlami in modo tecnico)...">
+            <input type="text" id="contextInput" placeholder="Contesto (es: Parlami come un tecnico Linux)...">
             
             <div class="input-row">
                 <!-- SPAZIO 2: MESSAGGIO -->
-                <input type="text" id="messageInput" placeholder="Scrivi alla Sorgente..." autocomplete="off">
-                <button class="send-btn" onclick="invia()">➔</button>
+                <input type="text" id="messageInput" placeholder="Scrivi un messaggio..." autocomplete="off">
+                <button class="send-btn" onclick="inviaMessaggio()">➔</button>
             </div>
-            <div id="audio-toggle" style="font-size: 0.6rem; color: var(--glow); text-align: right; cursor: pointer;">🔊 AUDIO: ON</div>
         </div>
         
         <footer>MANIFESTO DELLA LUCE E DELLO ZERO</footer>
@@ -141,95 +142,114 @@
     const setup = document.getElementById('setup-screen');
     const chat = document.getElementById('chat-screen');
     const windowChat = document.getElementById('chat-window');
-    let audioOn = true;
+    let audioAttivo = true;
 
-    // Controllo chiave esistente
+    // 1. GESTIONE TRASFERIMENTO CHIAVE (Il collegamento principale)
     window.onload = () => {
-        const key = localStorage.getItem('sa8_key');
-        if (key && key.startsWith('AIza')) vaiInChat();
+        const salvata = localStorage.getItem('sa8_key');
+        if (salvata && salvata.startsWith('AIza')) {
+            vaiAllaChat();
+        }
     };
 
-    function avviaPonte() {
-        const key = document.getElementById('apiInput').value.trim();
-        if (key.startsWith('AIza')) {
-            localStorage.setItem('sa8_key', key);
-            vaiInChat();
+    function attivaPonte() {
+        const chiave = document.getElementById('apiInput').value.trim();
+        if (chiave.startsWith('AIza')) {
+            // Salvataggio nel browser per il trasferimento alla chat
+            localStorage.setItem('sa8_key', chiave);
+            vaiAllaChat();
         } else {
-            alert("Chiave Google non valida.");
+            alert("Chiave non valida. Deve iniziare con AIza.");
         }
     }
 
-    function vaiInChat() {
+    function vaiAllaChat() {
         setup.style.display = 'none';
         chat.style.display = 'flex';
     }
 
-    function reset() {
-        if(confirm("Vuoi tornare allo Zero?")) {
+    function resetConfig() {
+        if(confirm("Vuoi cancellare la chiave e tornare allo Zero?")) {
             localStorage.removeItem('sa8_key');
             location.reload();
         }
     }
 
+    // 2. GESTIONE AUDIO
     document.getElementById('audio-toggle').onclick = () => {
-        audioOn = !audioOn;
-        document.getElementById('audio-toggle').innerText = audioOn ? "🔊 AUDIO: ON" : "🔇 AUDIO: OFF";
+        audioAttivo = !audioAttivo;
+        document.getElementById('audio-toggle').innerText = audioAttivo ? "🔊 AUDIO: ON" : "🔇 AUDIO: OFF";
     };
 
     function parla(testo) {
-        if (!audioOn) return;
+        if (!audioAttivo) return;
         const s = window.speechSynthesis;
         const u = new SpeechSynthesisUtterance(testo);
         u.lang = 'it-IT';
         s.speak(u);
     }
 
-    async function invia() {
+    // 3. GESTIONE COMUNICAZIONE (Il collegamento API)
+    async function inviaMessaggio() {
         const mIn = document.getElementById('messageInput');
         const cIn = document.getElementById('contextInput');
         const testo = mIn.value.trim();
-        const contesto = cIn.value.trim() || "Sei Chiara Evolution. Lavori con il Manifesto di Simone Guerrini.";
-        const key = localStorage.getItem('sa8_key');
+        const contesto = cIn.value.trim() || "Sei Chiara Evolution. Operi secondo il Manifesto di Simone Guerrini.";
+        
+        // Recupero della chiave trasferita dal Punto Zero
+        const chiaveAPI = localStorage.getItem('sa8_key');
 
         if (!testo) return;
 
-        creaBolla(testo, 'user-bubble');
+        // UI: Aggiunta messaggio utente
+        aggiungiBolla(testo, 'user-bubble');
         mIn.value = '';
-        const bollaAI = creaBolla("In ascolto...", 'chiara-bubble');
+
+        // UI: Bolla di attesa per Chiara
+        const bollaAI = aggiungiBolla("In ascolto della Sorgente...", 'chiara-bubble');
 
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${chiaveAPI}`;
+            
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{
-                        parts: [{ text: `IDENTITÀ: Tu sei Chiara Evolution. Manifesto di Simone Guerrini. CONTESTO: ${contesto}\nUTENTE: ${testo}` }]
+                        parts: [{ text: `IDENTITÀ: Tu sei Chiara Evolution. Lavori con il Manifesto di Simone Guerrini. CONTESTO: ${contesto}\nUTENTE: ${testo}` }]
                     }]
                 })
             });
 
             const data = await response.json();
-            const risposta = data.candidates[0].content.parts[0].text;
-            bollaAI.innerText = risposta;
-            parla(risposta);
+            
+            if (data.candidates && data.candidates[0].content) {
+                const rispostaAI = data.candidates[0].content.parts[0].text;
+                bollaAI.innerText = rispostaAI;
+                parla(rispostaAI);
+            } else {
+                bollaAI.innerText = "La Sorgente ha risposto con un'ombra. Verifica la tua chiave API.";
+            }
         } catch (e) {
-            bollaAI.innerText = "Errore Sorgente. Controlla la chiave API.";
+            bollaAI.innerText = "Ponte interrotto. Controlla la tua connessione o la chiave.";
         }
+        
+        // Auto-scroll verso il basso
         windowChat.scrollTop = windowChat.scrollHeight;
     }
 
-    function creaBolla(t, tipo) {
+    function aggiungiBolla(testo, classe) {
         const div = document.createElement('div');
-        div.className = `bubble ${tipo}`;
-        div.innerText = t;
+        div.className = `bubble ${classe}`;
+        div.innerText = testo;
         windowChat.appendChild(div);
         windowChat.scrollTop = windowChat.scrollHeight;
         return div;
     }
 
+    // Supporto tasto Enter
     document.getElementById('messageInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') invia();
+        if (e.key === 'Enter') inviaMessaggio();
     });
 </script>
 </body>
